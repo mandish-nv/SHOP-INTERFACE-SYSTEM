@@ -2,103 +2,169 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
+#include <fstream>
+#include<string>
 using namespace std;
 
-void item_list(){
-    cout<<"1. Chalk"<<endl;
-    cout<<"2. Duster"<<endl;
-    cout<<"3. Telescope"<<endl;
-    cout<<"4. Beaker"<<endl;
-    cout<<"5. Rice"<<endl;
-    // cout<<"6. Hot sauce"<<endl;
-    // cout<<"7. Lemon juice"<<endl;
-    // cout<<"8. Apple juice"<<endl;
-    // cout<<"9. Guava"<<endl;
-    // cout<<"10. Spoon"<<endl;
-    cout<<"11. Done"<<endl;
+//void item_list() {
+//    cout << "1. Chalk" << endl;
+//    cout << "2. Duster" << endl;
+//    cout << "3. Telescope" << endl;
+//    cout << "4. Beaker" << endl;
+//    cout << "5. Rice" << endl;
+//    // cout<<"6. Hot sauce"<<endl;
+//    // cout<<"7. Lemon juice"<<endl;
+//    // cout<<"8. Apple juice"<<endl;
+//    // cout<<"9. Guava"<<endl;
+//    // cout<<"10. Spoon"<<endl;
+//    cout << "11. Done" << endl;
+//}
+
+void item_list() {
+    int item_code, price, quantity;
+    string item_name, brand_name;
+    fstream view_list;
+
+    view_list.open("Items.txt", ios::in);
+    cout << "Item_code\t Item_name\t Brand_name\t Price\t Quantity" << endl;
+    if (view_list.is_open()) {
+        view_list >> item_code >> price >> quantity >> item_name>>brand_name;
+        while (!view_list.fail()) {
+
+            cout << item_code << "\t" << item_name << "\t" << brand_name << "\t" << price << "\t" << quantity << endl;
+        }
+        view_list.close();
+    }
+    else {
+        cout << "FILE NOT FOUND"<<endl;
+    }
+
+
+
+}
+
+void store_item(){
+    int item_code, price, quantity;
+    string item_name, brand_name;
+    fstream store_item;
+    
+    store_item.open("Items.txt", ios::out);
+    if (store_item.is_open()) {
+        cout << "Enter Item code: ";
+        cin >> item_code;
+        store_item >> item_code;
+        cout << "Enter Item name: ";
+        cin >> item_name;
+        store_item >> item_name;
+        cout << "Enter Brand name: ";
+        cin >> brand_name;
+        store_item >> brand_name;
+        cout << "Enter Price of item: ";
+        cin >> price;
+        store_item >> price;
+        cout << "Enter Quantity of item: ";
+        cin >> quantity;
+        store_item >> quantity;
+
+
+        store_item.close();
+    }
+    else {
+        cout << "FILE NPT FOUND" << endl;
+    }
 }
 
 int main() {
     int option;
-    int buy[15],quant[15];
-    int i=0;
-    int sum=0;
+    int buy[15], quant[15];
+    int i = 0;
+    int sum = 0;
     string name;
     int price;
-    
-    cout<<"------------------SHOP INTERFACE SYSTEM------------------"<<endl;
-    cout<<"1. Admin"<<endl;
-    cout<<"2. Customer"<<endl<<endl;
-    
-    cout<<"Choose an option: ";
-    cin>>option;
-    
+
+    cout << "------------------SHOP INTERFACE SYSTEM------------------" << endl;
+    cout << "1. Admin" << endl;
+    cout << "2. Customer" << endl << endl;
+
+    cout << "Choose an option: ";
+    cin >> option;
+
     system("CLS");
 
-    switch (option){
-    //admin
-    case 1:{
-        
-        
+    switch (option) {
+        //admin
+    case 1: {
+        cout << "2. Add items" << endl;
+        cout <<endl<< "Enter an option" << endl;
+        cin >> option;
+        switch (option) {
+        case 2:{
+            store_item();
+            break;
+        }
+        }
+
+            break;
     }
-    
-    //customer
-    case 2:{
+
+          //customer
+    case 2: {
         item_list();
-        cout<<endl<<"What do you want to buy?"<<endl;
-        while(buy[i-1]!=11){
-            cin>>buy[i];
-            if (buy[i]==11)
-            	goto next;
-            cout<<"Enter quantity: ";
-            cin>>quant[i];
+        cout << endl << "What do you want to buy?" << endl;
+        while (buy[i - 1] != 11) {
+            cin >> buy[i];
+            if (buy[i] == 11)
+                goto next;
+            cout << "Enter quantity: ";
+            cin >> quant[i];
             i++;
-            cout<<endl<<"Another item: "<<endl;
+            cout << endl << "Another item: " << endl;
         }
-        
-        next:
+
+    next:
         //calculate
-        for(i=0;i<=12;i++){
-            switch (buy[i]){
-                case 1:{
-                    name="Chalk";
-                    price=40;
-                    break;
-                }
-                case 2:{
-                    name="Duster";
-                    price=100;
-                    break;
-                }
-                case 3:{
-                    name="Telescope";
-                    price=15000;
-                    break;
-                }
-                case 4:{
-                    name="Beaker";
-                    price=2000;
-                    break;
-                }
-                case 5:{
-                    name="Rice";
-                    price=1500;
-                    break;
-                }
-                case 11:{
-                    goto exitt;
-                    break;
-                }
-                default:{
-                    break;
-                }
+        for (i = 0; i <= 12; i++) {
+            switch (buy[i]) {
+            case 1: {
+                name = "Chalk";
+                price = 40;
+                break;
             }
-            sum=sum+(price*quant[i]);
+            case 2: {
+                name = "Duster";
+                price = 100;
+                break;
+            }
+            case 3: {
+                name = "Telescope";
+                price = 15000;
+                break;
+            }
+            case 4: {
+                name = "Beaker";
+                price = 2000;
+                break;
+            }
+            case 5: {
+                name = "Rice";
+                price = 1500;
+                break;
+            }
+            case 11: {
+                goto exitt;
+                break;
+            }
+            default: {
+                break;
+            }
+            }
+            sum = sum + (price * quant[i]);
         }
-        exitt:
-        cout<<"Total= "<<sum;
+    exitt:
+        cout << "Total= " << sum;
     }
+          break;
     }
-    
+
     return 0;
 }
