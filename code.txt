@@ -3,7 +3,7 @@
 #include <string>
 #include <stdlib.h>
 #include <fstream>
-#include<string>
+
 using namespace std;
 
 //void item_list() {
@@ -28,10 +28,10 @@ void item_list() {
     view_list.open("Items.txt", ios::in);
     cout << "Item_code\t Item_name\t Brand_name\t Price\t Quantity" << endl;
     if (view_list.is_open()) {
-        view_list >> item_code >> price >> quantity >> item_name>>brand_name;
+        view_list >> item_code >> item_name >> brand_name >> price>>quantity;
         while (!view_list.fail()) {
 
-            cout << item_code << "\t" << item_name << "\t" << brand_name << "\t" << price << "\t" << quantity << endl;
+             cout << item_code << "\t" << item_name << "\t" << brand_name << "\t" << price << "\t" << quantity << endl;
         }
         view_list.close();
     }
@@ -43,34 +43,72 @@ void item_list() {
 
 }
 
+//void view() {
+//    int item_code, price, quantity;
+//    string item_name, brand_name;
+//    ifstream view_list;
+
+//    view_list.open("abc.txt", ios::in);
+//    cout << "Item_code\t Item_name\t Brand_name\t Price\t Quantity" << endl;
+
+//        view_list >> item_code >> item_name >> brand_name >> price>>quantity;
+//        //while (!view_list.fail()) {
+
+//            cout << item_code << "\t" << item_name << "\t" << brand_name << "\t" << price << "\t" << quantity << endl;
+//        //}
+//        view_list.close();
+
+//}
+
+//void buy(){
+//	int item_code, price, quantity;
+//    string item_name, brand_name;
+//    fstream store_item;
+//    
+//    store_item.open("abc.txt", ios::out | ios::app);
+//    
+//		cout << "Enter Item code: ";
+//        cin >> item_code;
+//        cout << "Enter Item name: ";
+//        cin >> item_name;
+//        cout << "Enter Brand name: ";
+//        cin >> brand_name;
+//        cout << "Enter Price of item: ";
+//        cin >> price;
+//        cout << "Enter Quantity of item: ";
+//        cin >> quantity;
+//        
+//        store_item <<item_code<<" "<<item_name<<brand_name<<price<< quantity;
+
+
+//        store_item.close();
+//}
+
 void store_item(){
-    int item_code, price, quantity;
+   	int item_code, price, quantity;
     string item_name, brand_name;
     fstream store_item;
     
-    store_item.open("Items.txt", ios::out);
-    if (store_item.is_open()) {
-        cout << "Enter Item code: ";
+	store_item.open("Items.txt", ios::out |ios_base::app);
+     if (store_item.is_open()) {
+		cout << "Enter Item code: ";
         cin >> item_code;
-        store_item >> item_code;
         cout << "Enter Item name: ";
         cin >> item_name;
-        store_item >> item_name;
         cout << "Enter Brand name: ";
         cin >> brand_name;
-        store_item >> brand_name;
         cout << "Enter Price of item: ";
         cin >> price;
-        store_item >> price;
         cout << "Enter Quantity of item: ";
         cin >> quantity;
-        store_item >> quantity;
+        
+        store_item <<item_code<<" "<<item_name<<" "<<brand_name<<" "<<price<< " "<<quantity;
 
 
         store_item.close();
     }
     else {
-        cout << "FILE NPT FOUND" << endl;
+        cout << "FILE NOT FOUND" << endl;
     }
 }
 
