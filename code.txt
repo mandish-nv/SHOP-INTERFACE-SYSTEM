@@ -8,13 +8,24 @@ using namespace std;
 
 class Shop {
 protected:
-    int item_code, price, quantity;
-    string item_name, brand_name;
+    int price, quantity;
+    string item_code, item_name, brand_name;
     fstream view_list, put_item;
 
 public:
+    void home_page(int&);
 	void item_list();
 };
+
+void Shop::home_page(int& opt1) {
+    cout << "------------------SHOP INTERFACE SYSTEM------------------" << endl;
+    cout << "1. Admin" << endl;
+    cout << "2. Customer" << endl << endl;
+    cout << "Choose an option: ";
+    cin >> opt1;
+
+    system("CLS");
+}
 
 void Shop:: item_list() {
         view_list.open("Items.txt", ios::in);
@@ -33,13 +44,30 @@ void Shop:: item_list() {
 
 class Admin :public Shop {
 private:
-
+    string ynopt;
 public:
-    void store_item();
+    void admin_option(int&);
+    void add_item();
 };
 
-void Admin:: store_item() {
+void Admin::admin_option(int& opt2) {
+    cout << "------------------SHOP INTERFACE SYSTEM------------------" << endl;
+    cout << "1. View Item List" << endl;
+    cout << "2. Add Items" << endl;
+    cout << "3. Remove Items" << endl;
+    cout << "4. Edit Items" << endl;
+    cout << "5. View Bills" << endl;
+    cout << "6. Go to home screen" << endl << endl;
+    cout << "Choose an option: ";
+    cin >> opt2;
+
+    system("CLS");
+
+}
+
+void Admin:: add_item() {
     put_item.open("Items.txt", ios::out | ios_base::app);
+    Again:
     if (put_item.is_open()) {
         cout << "Enter Item code: ";
         cin >> item_code;
@@ -53,6 +81,11 @@ void Admin:: store_item() {
         cin >> quantity;
 
         put_item << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity<<" ";
+        cout << "Do you want to add more? (y/n)";
+        cin >> ynopt;
+        if (ynopt == "y") {
+            goto Again;
+        }
         put_item.close();
     }
     else {
@@ -62,51 +95,72 @@ void Admin:: store_item() {
 
 class Customer :public Shop {
 private:
-
+    int buy[20], quant[20];
+    int i=0;
 public:
-
+    void buy_item();
+    //void calculate(int[], int[]);
 };
+
+void Customer::buy_item() {
+    cout << "\nWhat do you want to buy?" << endl;
+    while (buy[i-1] != 99) {
+        cin >> buy[i];
+        if (buy[i] == 0)
+            break;
+        cout << "Enter quantity: ";
+        cin >> quant[i];
+        i++;
+        cout << "\nAnother item: " << endl;
+    }
+}
 
 int main() {
     Shop shop;
     Admin admin;
     Customer customer;
-    int option,i=0;
+    int option1,option2,i=0;
     int buy[20], quant[20];
 
-    cout << "------------------SHOP INTERFACE SYSTEM------------------" << endl;
-    cout << "1. Admin" << endl;
-    cout << "2. Customer" << endl << endl;
-    cout << "Choose an option: ";
-    cin >> option;
-
-    system("CLS");
-
-    switch (option) {
+    Start:
+    shop.home_page(option1);
+    
+    switch (option1) {
     //admin
     case 1: {
-
+        admin.admin_option(option2);
+        switch (option2) {
+        case 1: {
+            admin.item_list();
+            break;
+        }
+        case 2: {
+            admin.add_item();
+            break;
+        }
+        }
+        break;
     }
 
     //customer
     case 2: {
-        shop.item_list();
-        cout << "\nWhat do you want to buy?" << endl;
-        while (buy[i] != 0) {
-            cin >> buy[i];
-            if (buy[i] == 0)
-                break;
-            cout << "Enter quantity: ";
-            cin >> quant[i];
-            i++;
-            cout << "\nAnother item: " << endl;
-        }
+        customer.item_list();
+        customer.buy_item();
 
 
-
-        //calculate
-
+        //customer.calculate(buy[20], quant[20]);
+        break;
     }
+    //exit
+    case 3: {
+        return 0;
+    }
+
+    default: {
+        cout << "<<<<<<<<<<<<<INVALID OPTION>>>>>>>>>>>>" << endl;
+        goto Start;
+    }
+    
     }
 
 	return 0;
