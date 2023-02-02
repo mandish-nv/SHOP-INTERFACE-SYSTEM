@@ -1,0 +1,1 @@
+0101 Dairymilk Cadbury 185 200 0102 Snickers Mars 140 320 0103 5Star Cadbury 50 120 0104 KitKat Nestle 125 400 0201 Lay's PepsiCo 50 400 0202 NepaliChips CG 50 200 0203 PotatoChips Kwik's 60 250 
