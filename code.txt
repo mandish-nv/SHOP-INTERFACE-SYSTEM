@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <fstream>
 #include<string>
+#include<iomanip>
 using namespace std;
 
 class Shop {
 protected:
-    int price, quantity;
+    int price=0, quantity=0;
     string item_code, item_name, brand_name;
     fstream view_list, put_item;
 
@@ -41,6 +42,7 @@ void Shop:: item_list() {
             cout << "FILE NOT FOUND" << endl;
         }
 }
+//last ko extra airacha
 
 class Admin :public Shop {
 private:
@@ -95,18 +97,19 @@ void Admin:: add_item() {
 
 class Customer :public Shop {
 private:
-    int buy[20], quant[20];
-    int i=0;
+    int quant[20];
+    string buy[20];
+    int i=0,total=0;
 public:
     void buy_item();
-    //void calculate(int[], int[]);
+    void calculate();
 };
 
 void Customer::buy_item() {
     cout << "\nWhat do you want to buy?" << endl;
-    while (buy[i-1] != 99) {
+    while (buy[i] != "DONE") {
         cin >> buy[i];
-        if (buy[i] == 0)
+        if (buy[i] == "0")
             break;
         cout << "Enter quantity: ";
         cin >> quant[i];
@@ -115,12 +118,32 @@ void Customer::buy_item() {
     }
 }
 
+void Customer :: calculate() {
+    view_list.open("Items.txt", ios::in);
+    if (view_list.is_open()) {
+        while (!view_list.fail()) {
+            view_list >> item_code >> item_name >> brand_name >> price >> quantity;
+            for (i = 0; i < 20; i++) {
+                if (buy[i] == item_code) {
+                    total = total + (price * quant[i]);
+                    break;
+                }
+            }
+        }
+        view_list.close();
+    }
+    else {
+        cout << "FILE NOT FOUND" << endl;
+    }
+    cout << "Total=" << total;
+}
+
 int main() {
     Shop shop;
     Admin admin;
     Customer customer;
-    int option1,option2,i=0;
-    int buy[20], quant[20];
+    int option1,option2;
+
 
     Start:
     shop.home_page(option1);
@@ -145,10 +168,9 @@ int main() {
     //customer
     case 2: {
         customer.item_list();
+        cout << "Enter 0 if you are done shopping." << endl;
         customer.buy_item();
-
-
-        //customer.calculate(buy[20], quant[20]);
+        customer.calculate();
         break;
     }
     //exit
