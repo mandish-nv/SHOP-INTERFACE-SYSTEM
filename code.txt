@@ -5,6 +5,11 @@
 #include <fstream>
 #include<string>
 #include<iomanip>
+#include<cstdio>
+#include <ctime>
+
+//random number
+
 using namespace std;
 
 class Shop {
@@ -32,7 +37,7 @@ void Shop:: item_list() {
         view_list.open("Items.txt", ios::in);
         cout << "Item_code\t Item_name\t Brand_name\t Price\t Quantity" << endl;
         if (view_list.is_open()) {
-            while (!view_list.fail()) {         
+            while (!view_list.eof()) {         
                 view_list >> item_code >> item_name >> brand_name >> price >> quantity;
                 cout << item_code << "\t" << item_name << "\t" << brand_name << "\t" << price << "\t" << quantity << endl;
             }
@@ -42,7 +47,6 @@ void Shop:: item_list() {
             cout << "FILE NOT FOUND" << endl;
         }
 }
-//last ko extra airacha
 
 //passsword
 class Admin :public Shop {
@@ -84,7 +88,7 @@ void Admin:: add_item() {
         cout << "Enter Quantity of item: ";
         cin >> quantity;
 
-        put_item << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity<<" ";
+        put_item <<" "<< item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity;
         cout << "Do you want to add more? (y/n)";
         cin >> ynopt;
         if (ynopt == "y") {
@@ -97,53 +101,26 @@ void Admin:: add_item() {
     }
 }
 
-void Admin::remove_item(){
+void Admin::remove_item()  {
     string option;
-    int counter=0;
     view_list.open("Items.txt", ios::in);
     temp_file.open("temp.txt", ios::out);
     cout << "Enter code number of item to remove: ";
     cin >> option;
-    //ERROR CHA - repeat bhairacha (<=5 wrong hola)
-    //try again
     if (view_list.is_open()) {
         while (!view_list.eof()) {
             view_list >> item_code >> item_name >> brand_name >> price >> quantity;
-            if (counter >= 1 && counter<=5) {
-                counter++;
-                continue;
-            }
-            else {
-                counter = 0;
-            }
-
             if (item_code != option) {
-                temp_file << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity << " ";
+                temp_file << " " << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity;
             }
-            else if(item_code == option) {
-                counter++;
+            else if (item_code == option) {
                 continue;
             }
         }
-        //skip loop 5 times
         view_list.close();
         temp_file.close();
-    }
-    else {
-        cout << "FILE NOT FOUND" << endl;
-    }
-    
-    //RENAME
-    view_list.open("Items.txt", ios::out);
-    temp_file.open("temp.txt", ios::in);
-    if (view_list.is_open()) {
-        while (!temp_file.eof()) {
-            temp_file >> item_code >> item_name >> brand_name >> price >> quantity;
-            view_list << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity << " ";
-        }
-        view_list.close();
-        temp_file.close();
-        cout << "ITEM DELETED SUCCESSFULLY!";
+        remove("Items.txt");
+        rename("temp.txt", "Items.txt");
     }
     else {
         cout << "FILE NOT FOUND" << endl;
@@ -154,11 +131,16 @@ class Customer :public Shop {
 private:
     int quant[20];
     string buy[20];
-    int i=0,total=0;
+    string dcode;
+    int i = 0;
+    double total=0,dtotal=0, discount=0;
 public:
     void buy_item();
+    void discount_code();
     void calculate();
+    void bill();
 };
+
 
 void Customer::buy_item() {
     cout << "\nWhat do you want to buy?" << endl;
@@ -170,6 +152,18 @@ void Customer::buy_item() {
         cin >> quant[i];
         i++;
         cout << "\nAnother item: " << endl;
+    }
+}
+
+void Customer::discount_code() {
+    cout << "Enter discount code: ";
+    cin >> dcode;
+    if (dcode == "Hello1" || dcode == "Hello2" || dcode == "Hello3") {
+        discount = 0.05;
+        cout << "You received a 5% discount!!"<<endl;
+    }
+    else {
+        cout << "INVALID CODE" << endl;
     }
 }
 
@@ -190,7 +184,35 @@ void Customer :: calculate() {
     else {
         cout << "FILE NOT FOUND" << endl;
     }
-    cout << "Total=" << total;
+    dtotal = total - discount * total;
+}
+
+void Customer::bill() {
+    // current date/time based on current system
+    /*time_t now = time(0);
+    char* dt = ctime(&now);*/
+    int i = 0;
+    cout << "------------------BILL------------------" << endl;
+    cout << "Bill no.: " << endl;
+    cout << "Date and Time: " <</*dt <<*/ endl;
+    cout << "\n\n";
+    cout << "S.No.\t Item Name\t Quantity\t Price" << endl;
+    while (buy[i] != "0") {
+        view_list.open("Items.txt", ios::in);
+        cout << i + 1 << ".\t";
+            while (!view_list.eof()) {
+                view_list >> item_code >> item_name >> brand_name >> price >> quantity;
+                if (buy[i] == item_code) {
+                    cout << item_name << "\t"<<quant[i]<<"\tRs."<<price<<endl;
+                    break;
+                }
+            }
+            i++;
+            view_list.close();
+    }
+    cout << "Total: " <<"Rs. " <<total<< endl;
+    cout << "Discount: " << discount * 100 << "%" << endl;
+    cout << "Total with discount: " << "Rs. " << dtotal << endl;
 }
 
 int main() {
@@ -231,7 +253,10 @@ int main() {
         customer.item_list();
         cout << "Enter 0 if you are done shopping." << endl;
         customer.buy_item();
+        customer.discount_code();
         customer.calculate();
+        system("CLS");
+        customer.bill();
         break;
     }
     //exit
