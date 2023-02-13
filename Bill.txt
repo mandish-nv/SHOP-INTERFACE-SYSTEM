@@ -1,0 +1,68 @@
+
+
+2
+26414
+Mon Feb 13 22:55:47 2023
+
+1 Dairymilk 44 185
+2 PotatoChips 2 60
+8380
+5
+7961
+
+
+3
+26672
+Mon Feb 13 22:57:06 2023
+
+1 Dairymilk 32 185
+2 PotatoChips 2 60
+3 Lay's 2 50
+6260
+0
+6260
+
+
+4
+1382
+Mon Feb 13 23:35:16 2023
+
+1 Dairymilk 2 185
+2 KitKat 5 125
+3 Lay's 4 50
+4 5Star 5 50
+1445
+5
+1372.75
+
+
+3
+27523
+Tue Feb 14 01:48:41 2023
+
+1 Dairymilk 23 185
+2 Lay's 4 50
+3 NepaliChips 2 50
+4555
+5
+4327.25
+
+
+1
+28157
+Tue Feb 14 01:51:55 2023
+
+1 Dairymilk 2 185
+370
+0
+370
+
+
+1
+28362
+Tue Feb 14 01:52:58 2023
+
+1 Dairymilk 1 185
+185
+5
+175.75
