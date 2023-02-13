@@ -7,10 +7,11 @@
 #include<iomanip>
 #include<cstdio>
 #include <ctime>
+#include<cstdlib>
 
 //random number
-
 using namespace std;
+
 
 class Shop {
 protected:
@@ -48,29 +49,48 @@ void Shop:: item_list() {
         }
 }
 
-//passsword
+
 class Admin :public Shop {
 private:
-    string ynopt;
+    string ynopt,input_pwd,current_pwd,new_pwd;
+    fstream pwd;
 public:
+    bool password();
     void admin_option(int&);
     void add_item();
     void remove_item();
+    void change_password();
 };
 
+bool Admin::password() {
+    system("CLS");
+    pwd.open("Password.bin", ios::in);
+    getline(pwd, current_pwd);
+    pwd.close();
+    cout << "Password: ";
+    cin >> input_pwd;
+    if (input_pwd == current_pwd) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
 void Admin::admin_option(int& opt2) {
+    system("CLS");
     cout << "------------------SHOP INTERFACE SYSTEM------------------" << endl;
     cout << "1. View Item List" << endl;
     cout << "2. Add Items" << endl;
     cout << "3. Remove Items" << endl;
     cout << "4. Edit Items" << endl;
     cout << "5. View Bills" << endl;
-    cout << "6. Go to home screen" << endl << endl;
+    cout << "6. Change admin password" << endl;
+    cout << "7. Go to home screen" << endl << endl;
     cout << "Choose an option: ";
     cin >> opt2;
 
     system("CLS");
-
 }
 
 void Admin:: add_item() {
@@ -88,8 +108,8 @@ void Admin:: add_item() {
         cout << "Enter Quantity of item: ";
         cin >> quantity;
 
-        put_item <<" "<< item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity;
-        cout << "Do you want to add more? (y/n)";
+        put_item << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity<<"\n";
+        cout << "Do you want to add more? (y/n) ";
         cin >> ynopt;
         if (ynopt == "y") {
             goto Again;
@@ -111,7 +131,7 @@ void Admin::remove_item()  {
         while (!view_list.eof()) {
             view_list >> item_code >> item_name >> brand_name >> price >> quantity;
             if (item_code != option) {
-                temp_file << " " << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity;
+                temp_file << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity<<endl;
             }
             else if (item_code == option) {
                 continue;
@@ -127,6 +147,26 @@ void Admin::remove_item()  {
     }
 }
 
+void Admin::change_password() {
+    pwd.open("Password.bin", ios::in);
+    getline(pwd, current_pwd);
+    pwd.close();
+    cout << "Enter previous password: ";
+    cin >> input_pwd;
+    if (input_pwd != current_pwd) {
+        cout << "INCORRECT PASSWORD";
+    }
+    else {
+        pwd.open("Password.bin", ios::out);
+        cout << "Enter new password: ";
+        cin >> new_pwd;
+        pwd << new_pwd;
+        cout << "Password changed successfully";
+        pwd.close();
+    }
+}
+
+
 class Customer :public Shop {
 private:
     int quant[20];
@@ -140,7 +180,6 @@ public:
     void calculate();
     void bill();
 };
-
 
 void Customer::buy_item() {
     cout << "\nWhat do you want to buy?" << endl;
@@ -191,9 +230,12 @@ void Customer::bill() {
     // current date/time based on current system
     /*time_t now = time(0);
     char* dt = ctime(&now);*/
+
+
+    srand(time(0));
     int i = 0;
     cout << "------------------BILL------------------" << endl;
-    cout << "Bill no.: " << endl;
+    cout << "Bill no.: " << rand() <<endl;
     cout << "Date and Time: " <</*dt <<*/ endl;
     cout << "\n\n";
     cout << "S.No.\t Item Name\t Quantity\t Price" << endl;
@@ -215,12 +257,13 @@ void Customer::bill() {
     cout << "Total with discount: " << "Rs. " << dtotal << endl;
 }
 
+
+
 int main() {
     Shop shop;
     Admin admin;
     Customer customer;
     int option1,option2;
-
 
     Start:
     shop.home_page(option1);
@@ -228,24 +271,33 @@ int main() {
     switch (option1) {
     //admin
     case 1: {
-        admin.admin_option(option2);
-        switch (option2) {
-        case 1: {
-            admin.item_list();
+        if (!admin.password()) {
+            cout << "INCORRECT PASSWORD";
+        }
+        else {
+            admin.admin_option(option2);
+            switch (option2) {
+            case 1: {
+                admin.item_list();
+                break;
+            }
+            case 2: {
+                admin.add_item();
+                break;
+            }
+            case 3: {
+                admin.item_list();
+                cout << "\n\n\n";
+                admin.remove_item();
+                break;
+            }
+            case 6: {
+                admin.change_password();
+            }
+            }
+        }
             break;
-        }
-        case 2: {
-            admin.add_item();
-            break;
-        }
-        case 3: {
-            admin.item_list();
-            cout << "\n\n\n";
-            admin.remove_item();
-            break;
-        }
-        }
-        break;
+        
     }
 
     //customer
@@ -265,7 +317,7 @@ int main() {
     }
 
     default: {
-        cout << "<<<<<<<<<<<<<INVALID OPTION>>>>>>>>>>>>" << endl;
+        cout << "<<<<<<<<<<<<< INVALID OPTION >>>>>>>>>>>>" << endl;
         goto Start;
     }
     
