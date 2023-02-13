@@ -1,46 +1,53 @@
 //Shop Interface System
 #include <iostream>
 #include <string>
-#include <stdlib.h>
 #include <fstream>
-#include<string>
 #include<iomanip>
 #include<cstdio>
 #include <ctime>
 #include<cstdlib>
+#pragma warning(disable : 4996)
 
-//random number
 using namespace std;
 
 
 class Shop {
 protected:
-    int price=0, quantity=0;
-    string item_code, item_name, brand_name;
+    int price=0,item_counter=0;
+    string holder, item_code, item_name, brand_name;
     fstream view_list, put_item,temp_file;
 
 public:
     void home_page(int&);
 	void item_list();
+    void go_to_home_page();
 };
 
 void Shop::home_page(int& opt1) {
-    cout << "------------------SHOP INTERFACE SYSTEM------------------" << endl;
+    cout << "------------------------SHOP INTERFACE SYSTEM-------------------------" << endl;
     cout << "1. Admin" << endl;
-    cout << "2. Customer" << endl << endl;
+    cout << "2. Customer" << endl;
+    cout << "3. Exit" << endl << endl;
     cout << "Choose an option: ";
     cin >> opt1;
 
     system("CLS");
 }
 
+void Shop::go_to_home_page() {
+    cout << "\nPress ENTER to go to home page";
+    holder = getc(stdin);
+    holder = getc(stdin);
+    system("CLS");
+}
+
 void Shop:: item_list() {
         view_list.open("Items.txt", ios::in);
-        cout << "Item_code\t Item_name\t Brand_name\t Price\t Quantity" << endl;
+        cout << left << setw(15) << "ITEM_CODE" << setw(15) << "ITEM_NAME" << setw(20) << "BRAND_NAME" << setw(5) << right << "PRICE" << endl<<endl;
         if (view_list.is_open()) {
             while (!view_list.eof()) {         
-                view_list >> item_code >> item_name >> brand_name >> price >> quantity;
-                cout << item_code << "\t" << item_name << "\t" << brand_name << "\t" << price << "\t" << quantity << endl;
+                view_list >> item_code >> item_name >> brand_name >> price;
+                cout << left << setw(15) << item_code << setw(15) << item_name << setw(20) << brand_name << setw(2) << right <<"Rs."<< price << endl;
             }
             view_list.close();
         }
@@ -50,17 +57,27 @@ void Shop:: item_list() {
 }
 
 
+
 class Admin :public Shop {
 private:
     string ynopt,input_pwd,current_pwd,new_pwd;
-    fstream pwd;
+    fstream pwd,bill_view;
 public:
+    void go_to_admin_page();
     bool password();
     void admin_option(int&);
     void add_item();
     void remove_item();
+    void view_bills();
     void change_password();
 };
+
+void Admin::go_to_admin_page() {
+    cout << "\nPress ENTER to go to admin page";
+    holder = getc(stdin);
+    holder = getc(stdin);
+    system("CLS");
+}
 
 bool Admin::password() {
     system("CLS");
@@ -79,14 +96,13 @@ bool Admin::password() {
 
 void Admin::admin_option(int& opt2) {
     system("CLS");
-    cout << "------------------SHOP INTERFACE SYSTEM------------------" << endl;
+    cout << "-------------------------SHOP INTERFACE SYSTEM-------------------------" << endl;
     cout << "1. View Item List" << endl;
     cout << "2. Add Items" << endl;
     cout << "3. Remove Items" << endl;
-    cout << "4. Edit Items" << endl;
-    cout << "5. View Bills" << endl;
-    cout << "6. Change admin password" << endl;
-    cout << "7. Go to home screen" << endl << endl;
+    cout << "4. View Bills" << endl;
+    cout << "5. Change admin password" << endl;
+    cout << "6. Go to home screen" << endl << endl;
     cout << "Choose an option: ";
     cin >> opt2;
 
@@ -105,10 +121,8 @@ void Admin:: add_item() {
         cin >> brand_name;
         cout << "Enter Price of item: ";
         cin >> price;
-        cout << "Enter Quantity of item: ";
-        cin >> quantity;
 
-        put_item << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity<<"\n";
+        put_item << "\n"<<item_code << " " << item_name << " " << brand_name << " " << price;
         cout << "Do you want to add more? (y/n) ";
         cin >> ynopt;
         if (ynopt == "y") {
@@ -129,9 +143,9 @@ void Admin::remove_item()  {
     cin >> option;
     if (view_list.is_open()) {
         while (!view_list.eof()) {
-            view_list >> item_code >> item_name >> brand_name >> price >> quantity;
+            view_list >> item_code >> item_name >> brand_name >> price;
             if (item_code != option) {
-                temp_file << item_code << " " << item_name << " " << brand_name << " " << price << " " << quantity<<endl;
+                temp_file << "\n"<<item_code << " " << item_name << " " << brand_name << " " << price;
             }
             else if (item_code == option) {
                 continue;
@@ -145,6 +159,38 @@ void Admin::remove_item()  {
     else {
         cout << "FILE NOT FOUND" << endl;
     }
+}
+
+void Admin::view_bills() {
+    int bill_no,sn,quant;
+    string day,month,date,time,year;
+    double total, dperc, dtotal;
+    bill_view.open("Bill.txt", ios::in);
+    cout << "------------------------BILL-------------------------\n" << endl;
+    if (bill_view.is_open()) {
+        while (!bill_view.eof()) {
+            bill_view >> item_counter >> bill_no>>day>>month>>date>>time>>year;
+            cout << "Bill no.:  " << bill_no << endl;
+            cout << "Date and Time:  " << day <<" " << month<<" " << date <<" " << time <<" " << year << endl;
+            cout << "\n\n";
+            cout << left << setw(8) << "S.No." << setw(15) << "ITEM_NAME" << setw(15) << "QUANTITY" << setw(5) << right << "PRICE" << endl << endl;
+            while (item_counter != 0) {
+                bill_view >> sn >> item_name >> quant >> price;
+                cout << left << setw(8) << sn << setw(15) << item_name << setw(15) << quant << setw(2) << "Rs." << price << endl;
+                item_counter--;
+            }
+            bill_view >> total >> dperc >> dtotal;
+            cout << "\nTotal:  " << "Rs." << total << endl;
+            cout << "Discount:  " << dperc << "%" << endl;
+            cout << "Total with discount:  " << "Rs." << dtotal << endl;
+            cout << "\n-----------------------------------------------------\n\n" << endl;
+        }
+        bill_view.close();
+    }
+    else {
+        cout << "FILE NOT FOUND" << endl;
+    }
+
 }
 
 void Admin::change_password() {
@@ -167,6 +213,7 @@ void Admin::change_password() {
 }
 
 
+
 class Customer :public Shop {
 private:
     int quant[20];
@@ -174,6 +221,7 @@ private:
     string dcode;
     int i = 0;
     double total=0,dtotal=0, discount=0;
+    fstream store_bill;
 public:
     void buy_item();
     void discount_code();
@@ -182,20 +230,35 @@ public:
 };
 
 void Customer::buy_item() {
-    cout << "\nWhat do you want to buy?" << endl;
+    bool check=0;
+    view_list.open("Items.txt", ios::in);
+    cout << "\nWhat do you want to buy? (Enter item code):  ";
     while (buy[i] != "DONE") {
+        bool check = 0;
         cin >> buy[i];
         if (buy[i] == "0")
             break;
-        cout << "Enter quantity: ";
+        item_counter++;
+        while (!view_list.eof()) {
+            view_list>> item_code >> item_name >> brand_name >> price;
+            if (item_code == buy[i]) {
+                check = 1;
+                break;
+            }
+        }
+        if (!check) {
+            item_counter--;
+        }
+        cout << "Enter quantity:  ";
         cin >> quant[i];
         i++;
-        cout << "\nAnother item: " << endl;
+        cout << "\nAnother item:  " ;
     }
+    view_list.close();
 }
 
 void Customer::discount_code() {
-    cout << "Enter discount code: ";
+    cout << "\nEnter discount code: ";
     cin >> dcode;
     if (dcode == "Hello1" || dcode == "Hello2" || dcode == "Hello3") {
         discount = 0.05;
@@ -210,7 +273,7 @@ void Customer :: calculate() {
     view_list.open("Items.txt", ios::in);
     if (view_list.is_open()) {
         while (!view_list.fail()) {
-            view_list >> item_code >> item_name >> brand_name >> price >> quantity;
+            view_list >> item_code >> item_name >> brand_name >> price ;
             for (i = 0; i < 20; i++) {
                 if (buy[i] == item_code) {
                     total = total + (price * quant[i]);
@@ -227,34 +290,43 @@ void Customer :: calculate() {
 }
 
 void Customer::bill() {
-    // current date/time based on current system
-    /*time_t now = time(0);
-    char* dt = ctime(&now);*/
-
-
+    store_bill.open("Bill.txt", ios::out | ios::app);
+    time_t now = time(0);
+    char* dt = ctime(&now);
     srand(time(0));
-    int i = 0;
-    cout << "------------------BILL------------------" << endl;
-    cout << "Bill no.: " << rand() <<endl;
-    cout << "Date and Time: " <</*dt <<*/ endl;
-    cout << "\n\n";
-    cout << "S.No.\t Item Name\t Quantity\t Price" << endl;
+    int bill_no = rand();
+    int i = 0,sn;
+
+    cout << "------------------------BILL-------------------------" << endl;
+    cout << "\nBill no.:  " << bill_no <<endl;
+    cout << "Date and Time:  " <<dt << endl;
+    store_bill << "\n\n\n" << item_counter<<"\n"<<bill_no << "\n" << dt << "\n";
+    cout << "\n";
+    cout << left << setw(8) << "S.No." << setw(15) << "ITEM_NAME" << setw(15) << "QUANTITY" << setw(5) << right << "PRICE" << endl << endl;
+    
     while (buy[i] != "0") {
         view_list.open("Items.txt", ios::in);
-        cout << i + 1 << ".\t";
+        sn = i + 1;
+        cout <<left<<setw(8)<< sn ;
             while (!view_list.eof()) {
-                view_list >> item_code >> item_name >> brand_name >> price >> quantity;
+                view_list >> item_code >> item_name >> brand_name >> price;
                 if (buy[i] == item_code) {
-                    cout << item_name << "\t"<<quant[i]<<"\tRs."<<price<<endl;
+                    cout << setw(15) << item_name << setw(15) << quant[i] << setw(2) << "Rs."<<price<<endl;
+                    store_bill << sn << " " << item_name << " " << quant[i] << " " << price << "\n";
                     break;
                 }
             }
             i++;
             view_list.close();
     }
-    cout << "Total: " <<"Rs. " <<total<< endl;
-    cout << "Discount: " << discount * 100 << "%" << endl;
-    cout << "Total with discount: " << "Rs. " << dtotal << endl;
+    cout << "\n\nTotal:  " <<"Rs." <<total<< endl;
+    double dperc = discount * 100;
+    cout << "Discount:  " << dperc << "%" << endl;
+    cout << "Total with discount:  " << "Rs." << dtotal << endl;
+
+    store_bill << total << "\n" << dperc << "\n" << dtotal ;
+    store_bill.close();
+    
 }
 
 
@@ -264,35 +336,66 @@ int main() {
     Admin admin;
     Customer customer;
     int option1,option2;
+    string holder;
 
-    Start:
+    Home:
     shop.home_page(option1);
     
     switch (option1) {
-    //admin
+    //ADMIN
     case 1: {
+        //admin password
         if (!admin.password()) {
-            cout << "INCORRECT PASSWORD";
+            cout << "INCORRECT PASSWORD"<<endl;
+            shop.go_to_home_page();
+            goto Home;
         }
         else {
+        Admin:
+            //admin page
             admin.admin_option(option2);
             switch (option2) {
+            //view list
             case 1: {
                 admin.item_list();
+                admin.go_to_admin_page();
+                goto Admin;
                 break;
             }
+            //add items
             case 2: {
                 admin.add_item();
+                admin.go_to_admin_page();
+                goto Admin;
                 break;
             }
+            //remove items
             case 3: {
                 admin.item_list();
                 cout << "\n\n\n";
                 admin.remove_item();
+                admin.go_to_admin_page();
+                goto Admin;
                 break;
             }
-            case 6: {
+            //view bills
+            case 4: {
+                admin.view_bills();
+                admin.go_to_admin_page();
+                goto Admin;
+                break;
+            }
+            //change password
+            case 5: {
                 admin.change_password();
+                shop.go_to_home_page();
+                goto Home;
+                break;
+            }
+            //go to home page
+            case 6: {
+                goto Home;
+                break;
             }
             }
         }
@@ -300,10 +403,10 @@ int main() {
         
     }
 
-    //customer
+    //CUSTOMER
     case 2: {
         customer.item_list();
-        cout << "Enter 0 if you are done shopping." << endl;
+        cout << "\nEnter 0 if you are done shopping.\n" << endl;
         customer.buy_item();
         customer.discount_code();
         customer.calculate();
@@ -318,10 +421,11 @@ int main() {
 
     default: {
         cout << "<<<<<<<<<<<<< INVALID OPTION >>>>>>>>>>>>" << endl;
-        goto Start;
+        goto Home;
     }
     
     }
 
+    cout << "\nTHANK YOU FOR SHOPPING!!! :)\n";
 	return 0;
 }
